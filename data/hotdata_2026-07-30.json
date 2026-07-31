@@ -1,0 +1,16 @@
+{
+  "hooks": [
+    {"plat":"🎵 抖音","field":"A.职场内卷","hot":"入伏·40天三伏时间表","hook":"入伏第一天，同事已经靠这3个避暑神器续命了","url":"https://neodrop.ai/post/cMQeBdSvWF6"},
+    {"plat":"📕 小红书","field":"B.精致抠/新消费","hot":"Color Walk 色彩漫步","hook":"用一种颜色重走一遍你家附近，治愈感拉满","url":"https://www.toutiao.com/article/7663267750512493056/"},
+    {"plat":"🐦 X/FB","field":"C.AI数字化生存","hot":"Sora停服·可灵/Seedance三足鼎立","hook":"Sora要没了，但AI视频反而更好用了——同步音频成标配","url":"https://freeai.help/blog/sora-shutdown-2026-video-gen-landscape-zh195738"},
+    {"plat":"🎵 抖音","field":"B.精致抠/新消费","hot":"瑞幸×小镇烧饼反差CP","hook":"冰美式配热烧饼？这俩凑一起居然这么上头","url":"https://www.163.com/dy/article/L1R451PJ0552RS1E.html"},
+    {"plat":"📕 小红书","field":"C.AI数字化生存","hot":"AI视频成本腰斩 0.5元/秒","hook":"以前5人团队做不出500条，现在一个人日产千条？","url":"https://juejin.cn/post/7665328039567900726"},
+    {"plat":"🐦 X/FB","field":"A.职场内卷","hot":"暑假学习做饭成果展","hook":"下班后学做饭的第30天，我亲手把内卷熬成了汤","url":"https://neodrop.ai/post/cMQeBdSvWF6"}
+  ],
+  "bombs": [
+    {"plat":"抖音","track":"穿搭·氛围感","title":"古早森系穿搭是氛围感的神","data":"赞 12.1M｜收藏高｜评论热","why":["开头钩子：直接抛结论\"氛围感神\"制造好奇","视觉冲击：低饱和森系色调统一成片","情绪共鸣：主打\"旧衣柜复兴\"的怀旧松弛感"],"tip":"做\"旧衣柜复兴\"穿搭拆解，给3套可照着拍的镜头动作。","url":"https://neodrop.ai/es/post/CRadLzNdvJf"},
+    {"plat":"小红书","track":"情绪文旅","title":"Color Walk 色彩漫步：给生活点\"颜色\"瞧瞧","data":"话题浏览 2亿+｜抖音播放 4亿+","why":["零门槛参与感：一种颜色当线索，降低决策成本","情绪价值：低密度感官疗愈击中年轻人","UGC裂变：拍同款\"我的色彩日记\"可复制"],"tip":"做\"城市色彩漫步\"系列，固定转盘抽色+街拍+一句感想，极易模板化量产。","url":"https://www.toutiao.com/article/7663267750512493056/"},
+    {"plat":"抖音","track":"小镇营销","title":"瑞幸×小镇烧饼：反差CP出圈","data":"单条赞 19万+｜官方下场联动","why":["反差钩子：冰美式配热烧饼的反差CP","真实人物：老板娘原声接地气","情绪点：燕子窝细节引发共情转发"],"tip":"找\"大品牌+本地小店\"的反差组合，用真实店主视角讲小镇故事。","url":"https://www.163.com/dy/article/L1R451PJ0552RS1E.html"},
+    {"plat":"B站","track":"知识科普","title":"把\"沉没成本\"讲成脱口秀","data":"播放 80万+｜三连高","why":["用段子降门槛：把经济学名词变成生活吐槽","结构清晰：概念→误区→自救","评论区二创引发裂变"],"tip":"挑一个反直觉的冷知识，用\"我朋友\"的故事开场，天然有代入感。","url":"https://www.bilibili.com"}
+  ]
+}
