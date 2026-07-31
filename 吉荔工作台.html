@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>吉荔 · 森系毛玻璃双轨成长工作台 V5.3</title>
+<title>吉荔 · 森系毛玻璃双轨成长工作台 V5.4</title>
 <style>
   :root{
     /* 冷抹茶主调（占60%） */
@@ -209,7 +209,7 @@
 <div class="wrap">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:6px;">
-      <div class="brand editable-title" id="brandTitle" contenteditable="true" spellcheck="false" title="点击修改标题，自动保存">🌿 吉荔 · 森系毛玻璃双轨成长工作台 <span style="font-size:12px;color:var(--ink-soft);font-weight:400;">V5.3</span></div>
+      <div class="brand editable-title" id="brandTitle" contenteditable="true" spellcheck="false" title="点击修改标题，自动保存">🌿 吉荔 · 森系毛玻璃双轨成长工作台 <span style="font-size:12px;color:var(--ink-soft);font-weight:400;">V5.4</span></div>
       <span style="font-size:11px;color:var(--ink-soft);cursor:default;" title="标题可点击修改">✎</span>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
@@ -386,7 +386,7 @@
     <div id="ideaList"></div>
   </div>
 
-  <div class="foot">🧵 森系毛玻璃双轨成长工作台 V5.3 · 大盘指数实时联网 · 换设备不互通本地数据</div>
+  <div class="foot">🧵 森系毛玻璃双轨成长工作台 V5.4 · 大盘指数实时联网 · 换设备不互通本地数据</div>
 </div>
 
 <div class="modal-mask" id="todoModalMask">
@@ -655,7 +655,7 @@ let newsCache=load('newsCache',null);
 function fetchNews(cb){
   fetch('https://60s-api.viki.moe/v2/60s').then(r=>r.json()).then(j=>{
     if(j&&j.data&&Array.isArray(j.data.news)&&j.data.news.length){
-      newsCache={d:j.data.date||todayStr(),news:j.data.news};
+      newsCache={d:todayStr(),news:j.data.news};
       save('newsCache',newsCache);
       cb&&cb(true);
     }else{cb&&cb(false);}
@@ -693,7 +693,7 @@ App.refreshHooks=function(){ loadHotFromFile(); };
 /* ============ 4. 动效分镜 ============ */
 const motionTypes=['位移+缓动','遮罩转场','3D旋转','粒子消散','缩放推进','故障Glitch','光斑叠化','景深虚化'];
 const motionExec=['缓动函数建议 ease-out，前置素材需抠像','遮罩形状呼应产品轮廓，转场≤0.6s','建议 15°小角度旋转，避免眩晕','粒子从主体边缘逸散，配高频脆响','从特写拉到全景交代环境，节奏先快后稳','RGB分离强度 8px，仅用于转场瞬间','光斑用叠加模式，亮度随音乐起伏','前景虚化引导视线聚焦主体'];
-function genMotion(kw){
+App.genMotion=function(kw){
   kw=kw||$('motionKw').value.trim();
   if(!kw){alert('输入一个产品/场景关键词，如：咖啡液倒入杯中');return;}
   $('motionKw').value=kw;
@@ -743,7 +743,7 @@ App.addComp=function(){
 App.delComp=function(id){comps=comps.filter(c=>c.id!==id);save('comps',comps);renderComps();};
 
 /* ============ 6. 卖点测试 ============ */
-function genSell(){
+App.genSell=function(){
   let raw=$('sellKw').value.trim();
   if(!raw){alert('输入：产品名+核心词，如 便携榨汁机+3秒出汁');return;}
   let [prod,core]=raw.split(/[+＋]/);
@@ -770,19 +770,25 @@ const AI_FALLBACK={news:[
   '同步音频成标配，可灵3.0 一次过 6 机位、Flux3 支持 20 秒原生音视频。',
   'AI视频成本腰斩：Seedance 2.0 mini 约 0.5 元/秒，个人创作者日产千条成现实。'
 ],comment:'模型越来越会"拍"，但省不省时间看你肯不肯动脑——多镜头一次生成确实砍掉了拼接剪辑，可"导演思维"这活儿，平台暂时还替不了你。把重复抽卡交给 AI，把判断和审美留给自己，才是真省时间。'};
+const AI_RE=/AI|人工智能|模型|芯片|机器|智能|科技|OpenAI|谷歌|微软|字节|算法|算力|视频|互联网|新能源|电动车|自动驾驶|量子|机器人/;
 function renderAI(){
-  let items,comment;
-  if(newsCache&&newsCache.d===todayStr()&&newsCache.news){
-    items=newsCache.news.filter(n=>/AI|人工智能|模型|芯片|机器|智能|科技|OpenAI|谷歌|微软|字节|算法|算力|视频|互联网/.test(n)).slice(0,3);
-  }
-  if(items&&items.length){
-    comment='今天的AI新闻里，能直接帮你省时间的，往往是"生成质量更稳定/成本更低"那一条——别被新名词晃花眼，问自己：它能不能替我干掉重复劳动？能，就接；不能，先观望。';
+  let items,comment,label;
+  if(newsCache&&newsCache.news&&newsCache.news.length){
+    const ai=newsCache.news.filter(n=>AI_RE.test(n));
+    if(ai.length){
+      items=ai.slice(0,3);
+      comment='今天的AI新闻里，能直接帮你省时间的，往往是"生成质量更稳定/成本更低"那一条——别被新名词晃花眼，问自己：它能不能替我干掉重复劳动？能，就接；不能，先观望。';
+    }else{
+      items=newsCache.news.slice(0,3);
+      comment='今天的新闻里没有特别硬核的AI条目，但下面这些和你做内容、搞副业也相关——挑能直接省时间的那条看，剩下的当谈资。';
+    }
+    label='今日联网（60s 实时）';
   }else{
-    items=AI_FALLBACK.news;comment=AI_FALLBACK.comment;
+    items=AI_FALLBACK.news;comment=AI_FALLBACK.comment;label='2026-07-29 快照';
   }
   $('aiOut').innerHTML=`
   <div style="background:rgba(255,255,255,.5);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,.5);">
-  <b>🤖 今日AI动态（${items===AI_FALLBACK.news?'2026-07-29 快照':'今日联网'}）</b>
+  <b>🤖 今日AI动态（${label}）</b>
   <ul style="margin:6px 0 0;padding-left:18px;font-size:13px;">${items.map(i=>`<li>${i}</li>`).join('')}</ul>
   <div style="margin-top:8px;border-top:1px dashed rgba(63,107,78,.3);padding-top:8px;">
   💬 <b>毒舌点评</b>：${comment}
@@ -793,45 +799,111 @@ App.refreshAI=function(){
   fetchNews((ok)=>{renderAI();if(!ok)alert('联网获取失败，已显示最近快照。');});
 };
 
-/* ============ 8. 首饰话术（按日轮换材质） ============ */
+/* ============ 8. 首饰话术（金/银/翡翠/珍珠常驻 + 水晶·手串每日轮换） ============ */
 const jewels={
-  '金':{sub:'今日材质：黄金 💛',styles:{
+  '金':{styles:{
     '文学唯美':'把落日戴在颈间，金色的暖意像有人替你存了一束永不熄灭的傍晚。',
     '能量灵性':'五行属金，主"聚"与"贵气"——大白话：它像一个稳重的安全感账户，提醒你"我也值得被珍视"。',
     '心理共鸣':'对自己好一点不是矫情。一条金链，是给辛苦了大半年的自己的一枚实体勋章。'}},
-  '银':{sub:'今日材质：银 🤍',styles:{
+  '银':{styles:{
     '文学唯美':'月色淬成的金属，清冷里藏着温柔，像深夜独自散步时陪你的那阵风。',
     '能量灵性':'银主"净"与"护"——大白话：老话讲银能验毒辟邪，现代点说，它帮你把杂念过滤掉，回归清爽。',
     '心理共鸣':'不想太张扬的日子，戴银。低调不是没存在感，是高级的"我自在就好"。'}},
-  '翡翠':{sub:'今日材质：翡翠 💚',styles:{
+  '翡翠':{styles:{
     '文学唯美':'一抹苍翠藏在腕间，像把整座雨后的山都戴在了身上。',
     '能量灵性':'翡翠主"平安"与"生机"——大白话：古人说它挡灾，其实就是给你一个"稳住，会好的"心理锚点。',
     '心理共鸣':'成年人的底气不全是存款给的。一块戴得住的翡翠，是妈妈那辈传下来的"慢慢来"哲学。'}},
-  '珍珠':{sub:'今日材质：珍珠 🤍',styles:{
+  '珍珠':{styles:{
     '文学唯美':'光华内敛，像把大海的呼吸揉成了圆。不抢镜，却让人移不开眼。',
     '能量灵性':'珍珠主"柔"与"圆满"——大白话：它是蚌用痛养出的宝贝，提醒你：受过伤，也能长出光。',
-    '心理共鸣':'被生活磨得有点累？珍珠说：温柔不是软弱，是把砂砾养成了珍珠的人。'}},
-  '水晶':{sub:'今日材质：水晶 💜',styles:{
-    '文学唯美':'透明的身体里住着一小片星空，光一转，心事就亮了。',
-    '能量灵性':'水晶主"聚焦"与"清理"——大白话：粉晶招桃花、紫晶助静心，本质是帮你"想清楚要什么"。',
-    '心理共鸣':'选择困难症的救命稻草：买块水晶，先哄好自己的心，再哄世界。'}},
-  '手串':{sub:'今日材质：手串 🟤',styles:{
-    '文学唯美':'一粒粒数过去，像把焦虑一颗颗拨到了身后。',
-    '能量灵性':'手串主"静心"与"节律"——大白话：盘它的时候你在深呼吸，指尖节奏就是给大脑的重启键。',
-    '心理共鸣':'开会走神、睡前乱想？搓串。不是迷信，是给停不下来的自己一个"暂停"手势。'}}
+    '心理共鸣':'被生活磨得有点累？珍珠说：温柔不是软弱，是把砂砾养成了珍珠的人。'}}
 };
+/* 水晶类（6种细分材质，每日轮换其一） */
+const jewelCrystals={
+  '白水晶':{poem:'「水精帘动微风起，满架蔷薇一院香。」——唐·高骈《山亭夏日》',
+    literary:'一如山间清泉凝成的冰魄，通透得不容一丝杂念。光线穿过时，它把整个世界都滤成干净的白色，连尘埃都像是悬停的星光。握在掌心，凉意顺着纹路攀上指尖，像捧着一汪不会融化的晨露。',
+    energy:'主「净化」——大白话：它像一杯清水，帮你把脑子里的杂念冲走。',
+    mind:'想事情想不通的时候，盯着它看三秒，答案会浮现。'},
+  '紫水晶':{poem:'「紫气东来三万里，函关初度五千年。」——唐·杜甫《秋兴》',
+    literary:'深紫色的晶体里，沉着暮色与黎明的交界。它不是张扬的紫，而是将暗未暗时天边那一线深邃，像把一整个黄昏封进了石头里。光从背后透过来时，你能看到它内部细密的色带——那是时间一层层叠上去的痕迹。',
+    energy:'主「静心」——大白话：睡前戴它，像是给大脑按了个"勿扰模式"。',
+    mind:'失眠夜、焦虑日，它不会说话，但陪着你安静。'},
+  '粉晶':{poem:'「人面不知何处去，桃花依旧笑春风。」——唐·崔护《题都城南庄》',
+    literary:'它不是那种浓烈的粉，更像春日的桃花被晨雾洗过一遍，只剩淡淡的暖意。温润得像一封没有寄出的情书，摊开在掌心，字迹模糊却心意分明。戴在腕间，不争不抢，却让整片肤色都柔和了起来。',
+    energy:'主「桃花」——大白话：它不是帮你"找到"爱情，是帮你"打开"心门。',
+    mind:'先学会爱自己，粉晶就是那个提醒你的小铃铛。'},
+  '黄水晶':{poem:'「日照香炉生紫烟，遥看瀑布挂前川。」——唐·李白《望庐山瀑布》',
+    literary:'阳光被压缩进了石头里，握在掌心是温热的，像攥着一小把秋天午后的光。它的黄不是黄金的冷冽，而是麦穗成熟时那种饱满、沉甸甸的暖意。对着光看，里面仿佛有细碎的金粉在流动——那不是杂质，是太阳留下来的指纹。',
+    energy:'主「财富」——大白话：它不是凭空掉钱，是帮你"留住"该留的钱。',
+    mind:'想攒钱又管不住手？它是一颗小小的"定财石"。'},
+  '茶晶':{poem:'「竹喧归浣女，莲动下渔舟。」——唐·王维《山居秋暝》',
+    literary:'琥珀色的光，像一杯泡了太久的普洱，沉稳里有故事。它的颜色是岁月的茶渍，温润、不疾不徐，是那种可以陪你安静坐一下午的陪伴。不惊艳，但越看越深，像老茶客杯底最后一泡——淡了，却最有回甘。',
+    energy:'主「扎根」——大白话：帮你稳住情绪，不被外界带节奏。',
+    mind:'今天又想辞职？茶晶说：先稳住，再决定。'},
+  '绿幽灵':{poem:'「苔痕上阶绿，草色入帘青。」——唐·刘禹锡《陋室铭》',
+    literary:'透明的石体里，封印着一小片亿万年前的森林。墨绿色的包裹体层层叠叠，像山岚漫过远峰，又像雨后青苔爬满了石阶。它不是那种明亮的绿，而是深山里、人迹罕至处才有的苍翠——安静、古老、带着湿漉漉的呼吸。',
+    energy:'主「事业」——大白话：帮你吸引"贵人"和"机会"。',
+    mind:'职场努力不被看见？绿幽灵就是你的"隐形助攻"。'}
+};
+/* 手串类（6种细分材质，每日轮换其一） */
+const jewelBeads={
+  '小叶紫檀':{poem:'「紫檀金线绮罗香，绣户春深昼漏长。」——明·王世贞《紫檀曲》',
+    literary:'深红的木色里，藏着上百年的风和雨。那不是普通的棕红，而是老檀木年深日久氧化的结果——像一本旧书的封面，被无数双手翻阅后留下的温润光泽。盘玩时指尖传来细微的阻力，那是木材在呼吸，每一圈木纹都是一圈年轮，一百圈就是一百个夏天。',
+    energy:'主「定心」——大白话：盘它的时候，你的呼吸会慢下来。',
+    mind:'开会时藏在袖子里搓两下，没人知道你在"重启大脑"。'},
+  '沉香':{poem:'「博山炉中沉香火，双烟一气凌紫霞。」——唐·李白《杨叛儿》',
+    literary:'它是一种若有若无的香气，说不清从哪来，却让人莫名安心。不是花香那种甜腻，也不是木香那种直白——它是远山寺庙里飘来的那一缕、是旧书页翻开时散落的时光、是雨后泥土混合青草的味道。闭上眼，仿佛站在深山的松林里，风从谷底吹上来，带着露水和苔藓的气息。',
+    energy:'主「安神」——大白话：它是嗅觉的"降噪耳机"。',
+    mind:'地铁里挤到心慌的时候，低头闻一闻，像一秒到山林。'},
+  '黄花梨':{poem:'「梨花淡白柳深青，柳絮飞时花满城。」——宋·苏轼《东栏梨花》',
+    literary:'木纹如水墨画里晕开的远山，深浅交叠，越看越觉得那纹路里藏着一整幅山水长卷。鬼脸纹是它的签名，每一处都独一无二，像书法家的飞白。新切开的木头有清冽的香气，陈放久了则转为幽沉，那是时间与木头之间的对话，旁人听不懂，但能感知到。',
+    energy:'主「护身」——大白话：老辈人说它养人，其实养的是你的"定力"。',
+    mind:'被客户气到吐血？搓两下，告诉自己"不至于"。'},
+  '崖柏':{poem:'「松柏本孤直，难为桃李颜。」——唐·李白《古风》',
+    literary:'长在悬崖峭壁上的木，连香气都带着倔强。它不是那种圆滑的温润，而是骨节分明的硬朗——像握着一个不肯低头的人的掌骨。香气也辣，不像沉香那般温柔，而是直冲鼻腔的松脂味，带着风沙和岩石的记忆。握在手里，分明能感受到它曾在石缝中求生的那股狠劲。',
+    energy:'主「祛邪」——大白话：帮你挡掉"坏运气"和"小人"。',
+    mind:'今天水逆？戴它，心理暗示也是力量。'},
+  '星月菩提':{poem:'「纤云弄巧，飞星传恨，银汉迢迢暗度。」——宋·秦观《鹊桥仙》',
+    literary:'表面细密的纹理，像月光洒在荷叶上，露珠滚过时留下的轨迹。每一颗珠子上都有一点天然的小凹孔（俗称"月眼"），周围分布着细如星点的纹理——那是"星"，星月相映，如一幅微型的夜穹图。盘玩久了，它会从素白渐变为温润的牙黄，像一个年轻人慢慢沉淀出阅历。',
+    energy:'主「开智」——大白话：帮你把"想不通"变成"原来如此"。',
+    mind:'写不出脚本的时候搓一下，放空就是灵感的前奏。'},
+  '金刚菩提':{poem:'「千磨万击还坚劲，任尔东西南北风。」——清·郑燮《竹石》',
+    literary:'凹凸不平的纹路，像走过很多路的人的掌纹。沟壑纵横，深浅交错，不像其他珠串那般顺滑，反而有一种粗粝的、不服输的质感。盘玩时手指要刻意深入到每一道纹路里去，那是需要耐心的打磨——像生活本身，不会给你一条笔直的路，但每一步踩实了，都算数。',
+    energy:'主「坚毅」——大白话：帮你扛住压力，不轻言放弃。',
+    mind:'想放弃的时候，它说："再坚持一下，我在陪你。"'}
+};
+function pickDaily(arr){return arr[dayHash()%arr.length];}
 function renderJewel(){
-  const order=['金','银','翡翠','珍珠','水晶','手串'];
-  $('jewelSub').textContent='全部材质 · 六种佩戴意境（紧扣年轻人情绪痛点）';
-  $('jewelOut').innerHTML=order.map(m=>{
-    const j=jewels[m];
-    return `<div class="jewel-card">
-      <div class="jewel-head">💎 ${m}</div>
-      <div class="jewel-row">🌸 <b>文学唯美风</b>（佩戴意境）：${j.styles['文学唯美']}</div>
-      <div class="jewel-row">🔮 <b>能量灵性风</b>（磁场/五行·大白话）：${j.styles['能量灵性']}</div>
-      <div class="jewel-row">💬 <b>心理共鸣风</b>（自我奖励/社交货币）：${j.styles['心理共鸣']}</div>
-    </div>`;
-  }).join('');
+  const base=['金','银','翡翠','珍珠'];
+  const ck=pickDaily(Object.keys(jewelCrystals));
+  const bk=pickDaily(Object.keys(jewelBeads));
+  const tag='<span style="font-size:11px;background:rgba(255,255,255,.6);padding:1px 8px;border-radius:999px;color:var(--sage-deep);margin-left:6px;">每日轮换</span>';
+  let html=base.map(m=>{const j=jewels[m];return `<div class="jewel-card">
+    <div class="jewel-head">💎 ${m}</div>
+    <div class="jewel-row">🌸 <b>文学唯美风</b>（佩戴意境）：${j.styles['文学唯美']}</div>
+    <div class="jewel-row">🔮 <b>能量灵性风</b>（磁场/五行·大白话）：${j.styles['能量灵性']}</div>
+    <div class="jewel-row">💬 <b>心理共鸣风</b>（自我奖励/社交货币）：${j.styles['心理共鸣']}</div>
+  </div>`;}).join('');
+  const c=jewelCrystals[ck];
+  html+=`<div class="jewel-card" style="border-left:3px solid var(--accent);">
+    <div class="jewel-head">💎 今日水晶 · ${ck} ${tag}</div>
+    <div class="jewel-row">🌸 <b>文学唯美风</b></div>
+    <div style="font-size:13px;margin:2px 0 4px;font-style:italic;color:var(--sage-deep);">${c.poem}</div>
+    <div style="font-size:13px;margin-bottom:5px;">【原创文学延伸】${c.literary}</div>
+    <div class="jewel-row">🔮 <b>能量灵性风</b>：${c.energy}</div>
+    <div class="jewel-row">💬 <b>心理共鸣风</b>：${c.mind}</div>
+  </div>`;
+  const b=jewelBeads[bk];
+  html+=`<div class="jewel-card" style="border-left:3px solid var(--amber);">
+    <div class="jewel-head">🪵 今日手串 · ${bk} ${tag}</div>
+    <div class="jewel-row">🌸 <b>文学唯美风</b></div>
+    <div style="font-size:13px;margin:2px 0 4px;font-style:italic;color:var(--sage-deep);">${b.poem}</div>
+    <div style="font-size:13px;margin-bottom:5px;">【原创文学延伸】${b.literary}</div>
+    <div class="jewel-row">🔮 <b>能量灵性风</b>：${b.energy}</div>
+    <div class="jewel-row">💬 <b>心理共鸣风</b>：${b.mind}</div>
+  </div>`;
+  $('jewelSub').textContent='金/银/翡翠/珍珠常驻 · 水晶·手串每日轮换（含诗句与原创文学延伸）';
+  $('jewelOut').innerHTML=html;
 }
 
 /* ============ 9. 理财雷达（实时联网指数 + 每日两次） ============ */
@@ -1250,7 +1322,7 @@ function init(){
   tick();initClock();
   fetchFin();                       // 金融实时指数
   loadHotFromFile();               // 热点/爆款：优先读取本地数据文件（失败回退示例）
-  if(!(newsCache&&newsCache.d===todayStr())) fetchNews(()=>{renderAI();}); // AI 联网
+  fetchNews(()=>{renderAI();}); // AI 联网：页面加载即请求真实接口，失败回退快照
   setInterval(tick,60000);
   setInterval(initClock,30000);
   setInterval(fetchFin,300000);     // 金融每5分钟自动刷新（覆盖15点前后）
